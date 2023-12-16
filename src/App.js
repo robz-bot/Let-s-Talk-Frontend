@@ -1,24 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import Header from "./Components/Header";
+import Footer from "./Components/Footer";
+import ChatRoom from "./Components/ChatRoom";
+import { useState } from "react";
+import './index.css'
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import Login from "./Pages/Login";
+import Register from "./Pages/Register";
 
 function App() {
+  const [user, setUser] = useState(null);
+  const isAuthenticated = !!user;
+
+  const handleLogin = ({ user, token }) => {
+    setUser({ ...user, token });
+  };
+
+  const handleRegister = ({ user, token }) => {
+    setUser({ ...user, token });
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+        <Routes>
+          <Route
+            path="/"
+            element={isAuthenticated ? <ChatRoom username={user.username} /> : <Navigate to="/login" replace />}
+          />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register onRegister={handleRegister} />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
